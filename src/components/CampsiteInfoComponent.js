@@ -4,19 +4,74 @@ import {
   CardImg,
   CardText,
   CardBody,
+  Breadcrumb,
+  BreadcrumbItem,
   Button,
   Modal,
   ModalHeader,
   ModalBody,
+  Label,
 } from "reactstrap";
-import { Breadcrumb, BreadcrumbItem } from "reactstrap";
 import { Link } from "react-router-dom";
 import { Control, LocalForm, Errors } from "react-redux-form";
 import { Loading } from "./LoadingComponent";
 import { baseUrl } from "../shared/baseUrl";
+import { FadeTransform, Fade, Stagger } from "react-animation-components";
 
 const maxLength = (len) => (val) => !val || val.length <= len;
 const minLength = (len) => (val) => val && val.length >= len;
+
+function RenderCampsite({ campsite }) {
+  return (
+    <div className="col-md-5 m-1">
+      <FadeTransform
+        in
+        transformProps={{
+          exitTransform: "scale(0.5) translateY(-50%)",
+        }}
+      >
+        <Card>
+          <CardImg top src={baseUrl + campsite.image} alt={campsite.name} />
+          <CardBody>
+            <CardText>{campsite.description}</CardText>
+          </CardBody>
+        </Card>
+      </FadeTransform>
+    </div>
+  );
+}
+
+function RenderComments({ comments, postComment, campsiteId }) {
+  if (comments) {
+    return (
+      <div className="col-md-5 m-1">
+        <h4>Comments</h4>
+        <Stagger in>
+          {comments.map((comment) => {
+            return (
+              <Fade in key={comment.id}>
+                <div>
+                  <p>
+                    {comment.text}
+                    <br />
+                    -- {comment.author},
+                    {new Intl.DateTimeFormat("en-US", {
+                      year: "numeric",
+                      month: "short",
+                      day: "2-digit",
+                    }).format(new Date(Date.parse(comment.date)))}
+                  </p>
+                </div>
+              </Fade>
+            );
+          })}
+        </Stagger>
+        <CommentForm campsiteId={campsiteId} postComment={postComment} />
+      </div>
+    );
+  }
+  return <div />;
+}
 
 class CommentForm extends Component {
   constructor(props) {
@@ -50,9 +105,9 @@ class CommentForm extends Component {
         <Modal isOpen={this.state.isModalOpen} toggle={this.toggleModal}>
           <ModalHeader toggle={this.toggleModal}>Submit Comment</ModalHeader>
           <ModalBody>
-            <LocalForm onSubmit={this.handleSubmit}>
+            <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
               <div className="form-group">
-                <label htmlFor="rating">Rating</label>
+                <Label htmlFor="rating">Rating</Label>
                 <Control.select
                   model=".rating"
                   id="rating"
@@ -67,13 +122,13 @@ class CommentForm extends Component {
                 </Control.select>
               </div>
               <div className="form-group">
-                <label htmlFor="author">Author</label>
+                <Label htmlFor="author">Your Name</Label>
                 <Control.text
                   model=".author"
                   id="author"
                   name="author"
                   className="form-control"
-                  placeholder="author"
+                  placeholder="Your Name"
                   validators={{
                     minLength: minLength(2),
                     maxLength: maxLength(15),
@@ -91,11 +146,11 @@ class CommentForm extends Component {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="comment">Comment</label>
+                <Label htmlFor="text">Comment</Label>
                 <Control.textarea
-                  model=".comment"
-                  id="comment"
-                  name="comment"
+                  model=".text"
+                  id="text"
+                  name="text"
                   className="form-control"
                   placeholder="Comment"
                   rows="6"
@@ -108,47 +163,6 @@ class CommentForm extends Component {
       </React.Fragment>
     );
   }
-}
-
-function RenderCampsite({ campsite }) {
-  return (
-    <div className="col-md-5 m-1">
-      <Card>
-        <CardImg top src={baseUrl + campsite.image} alt={campsite.name} />
-        <CardBody>
-          <CardText>{campsite.description}</CardText>
-        </CardBody>
-      </Card>
-    </div>
-  );
-}
-
-function RenderComments({ comments, postComment, campsiteId }) {
-  if (comments) {
-    return (
-      <div className="col-md-5 m-1">
-        <h4>Comments</h4>
-        {comments.map((comment) => {
-          return (
-            <div key={comment.id}>
-              <p>
-                {comment.text} {""}
-                {new Intl.DateTimeFormat("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "2-digit",
-                }).format(new Date(Date.parse(comment.date)))}
-                <br />
-                {comment.author} ,
-              </p>
-            </div>
-          );
-        })}
-        <CommentForm campsiteId={campsiteId} postComment={postComment} />
-      </div>
-    );
-  }
-  return <div />;
 }
 
 function CampsiteInfo(props) {

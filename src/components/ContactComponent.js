@@ -20,6 +20,7 @@ const validEmail = (val) =>
 class Contact extends Component {
   constructor(props) {
     super(props);
+
     this.state = {
       firstName: "",
       lastName: "",
@@ -85,6 +86,7 @@ class Contact extends Component {
             </a>
           </div>
         </div>
+
         <div className="row row-content">
           <div className="col-12">
             <h2>Send us your Feedback</h2>
@@ -92,7 +94,7 @@ class Contact extends Component {
           </div>
           <div className="col-md-10">
             <Form
-              model="feedbackFrom"
+              model="feedbackForm"
               onSubmit={(values) => this.handleSubmit(values)}
             >
               <Row className="form-group">
