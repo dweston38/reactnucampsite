@@ -8,7 +8,7 @@ import {
   Row,
 } from "reactstrap";
 import { Link } from "react-router-dom";
-import { Control, LocalForm, Errors } from "react-redux-form";
+import { Control, Form, Errors } from "react-redux-form";
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !val || val.length <= len;
@@ -42,6 +42,7 @@ class Contact extends Component {
   handleSubmit(values) {
     console.log("Current state is: " + JSON.stringify(values));
     alert("Current state is: " + JSON.stringify(values));
+    this.props.resetFeedbackForm();
   }
   render() {
     return (
@@ -90,7 +91,10 @@ class Contact extends Component {
             <hr />
           </div>
           <div className="col-md-10">
-            <LocalForm onSubmit={(values) => this.handleSubmit(values)}>
+            <Form
+              model="feedbackFrom"
+              onSubmit={(values) => this.handleSubmit(values)}
+            >
               <Row className="form-group">
                 <Label htmlFor="firstName" md={2}>
                   First Name
@@ -193,7 +197,7 @@ class Contact extends Component {
                     id="email"
                     name="email"
                     placeholder="Email"
-                    classname="form-group"
+                    className="form-group"
                     validators={{
                       required,
                       validEmail,
@@ -218,7 +222,7 @@ class Contact extends Component {
                       <Control.checkbox
                         model=".agree"
                         name="agree"
-                        classname="form-check-input"
+                        className="form-check-input"
                       />{" "}
                       <strong>May we contact you?</strong>
                     </Label>
@@ -245,7 +249,7 @@ class Contact extends Component {
                     id="feedback"
                     name="feedback"
                     rows="12"
-                    className="form-group"
+                    className="form-control"
                   />
                 </Col>
               </Row>
@@ -256,7 +260,7 @@ class Contact extends Component {
                   </Button>
                 </Col>
               </Row>
-            </LocalForm>
+            </Form>
           </div>
         </div>
       </div>
